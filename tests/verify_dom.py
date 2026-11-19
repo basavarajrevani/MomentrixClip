@@ -1,6 +1,6 @@
 from pathlib import Path
 
-dom_path = Path(r"E:\Momentrix Clip\dom.html")
+dom_path = Path(r"web/index.html")
 text = dom_path.read_text(encoding="utf-8", errors="replace")
 
 checks = [

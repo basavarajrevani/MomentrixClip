@@ -1,64 +1,47 @@
-# Working on PeakCut
+# Working on Momentrix
 
-A short map for contributors and AI coding assistants.
+Architecture and contributor guide for Momentrix AI Viral Clip Studio.
 
-## Installing or updating PeakCut for someone
+---
 
-**Before installing, ask the person where to put it**, and suggest a short, permanent folder: `C:\peakcut` on
-Windows, `~/peakcut` on a Mac or Linux. Do not just clone into the folder you happen to be running in: AI assistants
-often run in a temporary, scratch or session workspace, which gets deleted, and whose path is long enough that
-Windows cannot load the speech library (Windows can't open files whose full path is over 260 characters; the error
-is "DLL load failed ... The filename or extension is too long"). Tell the person where you put it.
+## Brand & Workspace Configuration
 
-**When updating**, look at where PeakCut is first. If its folder path is long (roughly over 100 characters) or inside
-a temporary or assistant workspace, ask the person whether to move it to `C:\peakcut` (or `~/peakcut`) as part of the
-update. Moving is safe when done like this: clone the latest version into the new folder, copy over `.env`,
-`storage.json` and the `data` folder if there is one (the videos and clips; `storage.json` may point to a data folder
-elsewhere, which then stays where it is), install the requirements, start it from the new folder, check the clips
-are there, and only then offer to delete the old folder. Never delete anything without asking.
+Momentrix runs locally at `http://127.0.0.1:8765/app`. Keep folder paths short on Windows (`E:\Momentrix Clip` or `C:\momentrix`) to prevent path length limitations when loading speech-to-text models.
 
-## Run and test
+---
 
-- Run: `python -m studio.server` (settings from `.env`; see `.env.example`). Needs Python 3.10+ and `ffmpeg`.
-- The speech model (about 480 MB) downloads by itself on first start; `python -m studio.fetch_model` gets it ahead of time.
-- Tests: `python tests/run.py`. It starts a throwaway copy on a spare port with an empty data folder. Run it
-  before and after any change to `studio/`. No keys needed.
-- To try a risky change by hand without touching real data:
-  `PEAKCUT_DATA=<temp folder> PEAKCUT_PORT=8766 python -m studio.server`.
+## Running & Testing
 
-## Where things are
+- **Run Server**: `python -m studio.server` (or double click `run.bat`).
+- **Pre-download Speech Model**: `python -m studio.fetch_model`.
+- **Run Security & API Test Suite**: `python tests/test_momentrix_suite.py`.
+- **Run Rendered DOM Verification**: `python tests/verify_dom.py`.
 
-| File | What it does |
+---
+
+## Directory Overview
+
+| File / Folder | Role |
 |---|---|
-| `studio/server.py` | Every web route, and the gate that runs before each request (who is asking, limits, headers) |
-| `studio/config.py` | Every setting, read from environment variables |
-| `studio/ai.py` | The only code that talks to an AI service, and the AI settings saved from the dashboard (`ai.json` in the data folder) |
-| `studio/brain.py` | The prompts: finding clips, live judging, hooks and titles, caption fixes |
-| `studio/usage.py` | The record of AI calls and tokens shown on the AI usage page |
-| `studio/jobs.py` | The video pipeline and the fair queue |
-| `studio/live.py` | Live recording and clipping |
-| `studio/transcribe.py`, `studio/asr_worker.py` | Speech to text, here or on a second machine |
-| `studio/render.py` | Cutting, layouts and captions (ffmpeg and Pillow) |
-| `studio/media.py` | Downloading (yt-dlp), probing, audio |
-| `studio/auth.py`, `studio/account.py`, `studio/admin.py` | Sign-in, deleting things, the admin dashboard |
-| `studio/db.py` | Database tables (SQLAlchemy core; SQLite or PostgreSQL) |
-| `web/index.html` | The whole signed-in app, one file, no build step |
+| `studio/server.py` | FastAPI route endpoints, gatekeeper cyber defense, and security headers |
+| `studio/config.py` | Configuration settings parsed from environment variables |
+| `studio/ai.py` | Multi-provider AI interface (Gemini, Groq, Ollama, OpenAI, Anthropic, OpenRouter) |
+| `studio/brain.py` | Clip scouting, hook generation, viral titles, and prompt tuning |
+| `studio/roman.py` | English and Hinglish Roman caption engine |
+| `studio/jobs.py` | Video processing queue and worker execution |
+| `studio/live.py` | Live stream capture, chat spike detection, and realtime highlight extraction |
+| `studio/transcribe.py` | Local speech-to-text transcription engine (Sherpa-ONNX / Parakeet) |
+| `studio/render.py` | 9:16 layout composition, kinetic subtitles, and video rendering (FFmpeg) |
+| `studio/media.py` | Media ingestion (`yt-dlp`), audio normalization, and stream probing |
+| `studio/db.py` | Database abstraction layer (SQLite / PostgreSQL) |
+| `web/index.html` | Momentrix Studio single-page app (no build step, pure dark obsidian glass tech theme) |
+| `web/landing.html` | Momentrix marketing landing page |
 
-## Rules worth knowing
+---
 
-- **Sign-in is off by default** (`config.ACCOUNTS`): every request then belongs to one built-in owner
-  (`auth.local_user()`). With `PEAKCUT_ACCOUNTS=1` it is a normal multi-user site. Both paths are tested.
-- **Who is asking** always comes from the session (`ctx.uid()`), never from the request body. Background threads
-  set it themselves with `ctx.as_user(...)`.
-- **Anything that changes what a user sees must call `ctx.bump()`**. The page polls `/api/sync`, which answers
-  from memory when that user's counter has not moved.
-- **Text from videos is untrusted**: it goes into prompts through `brain._safe` and out through `brain._text`.
-- **Adding an AI provider**: add a row to `PROVIDERS` in `studio/ai.py`. If it speaks the OpenAI chat format that
-  is all; otherwise add one function that returns `(parsed JSON, tokens in, tokens out)`.
-- **Clips are rendered in a short temporary folder** and moved into place (`render.render_clip`): ffmpeg's caption
-  step cannot open paths longer than 260 characters on Windows.
-- **Secrets** are read from the environment or from files named by `*_FILE` settings. Never write a key, a real
-  address or a personal path into a tracked file.
-- **Pages** are plain HTML, CSS and JavaScript. Keep the existing palette, no shadows, and hover states that
-  change colour only.
-- Comments and messages are written in plain language for people who do not program. Keep that tone.
+## Engineering Standards
+
+- **Single-User Root Access**: Enabled by default (`MOMENTRIX_ACCOUNTS=0`). Opens straight into workspace without login friction.
+- **Client Session Context**: Request origin is tracked via session tokens (`ctx.uid()`), never client parameters.
+- **Untrusted Media Data**: Transcripts and metadata from external videos are sanitized through `brain._safe`.
+- **Cyber Shield Gatekeeper**: Unauthorized traversal attempts, injection payloads, or tampering prompt the `#guarddlg` modal alert.

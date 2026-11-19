@@ -56,3 +56,4 @@ server_stderr.log
 *.swo
 .DS_Store
 Thumbs.db
+
