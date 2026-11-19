@@ -1,0 +1,6 @@
+<svg width="400" height="90" viewBox="0 0 400 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="36" height="36" x="10" y="27" rx="9" fill="#7C3AED" />
+  <path d="M20 37L28 45L36 37M20 53L28 45L36 53" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="58" y="50" font-family="'Geist', system-ui, sans-serif" font-size="24" font-weight="800" fill="#0F172A" letter-spacing="-0.5">MOMENTRIX</text>
+  <text x="58" y="65" font-family="'Geist', system-ui, sans-serif" font-size="10" font-weight="600" fill="#64748B" letter-spacing="0.2">Turn Hours into Moments.</text>
+</svg>
