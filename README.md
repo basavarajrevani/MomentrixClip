@@ -54,7 +54,7 @@ python -m studio.server
 *(On first start, the speech model downloads automatically: ~480 MB, one-time only).*
 
 Open your browser at:
-👉 **`http://127.0.0.1:8765/app`**
+👉 **`http://127.0.0.1:8765`** (Opens the Momentrix Landing Page; click **Get started** to enter the Studio at `/app`).
 
 ---
 

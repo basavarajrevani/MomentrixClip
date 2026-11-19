@@ -5,6 +5,9 @@ echo   MOMENTRIX - Turn Hours into Moments.
 echo   Autonomous AI Video Clipping Platform
 echo ========================================================
 
+REM Automatically launch browser to the Momentrix landing page
+start http://127.0.0.1:8765
+
 REM Use the installed Python 3.11 with all ML and clipping packages
 if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
     echo Using Python 3.11 with all packages installed...
